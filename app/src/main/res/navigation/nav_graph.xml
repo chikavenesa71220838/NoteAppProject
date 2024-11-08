@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginpage">
+
+    <fragment
+        android:id="@+id/loginpage"
+        android:name="com.example.lammoire.loginpage"
+        android:label="fragment_loginpage"
+        tools:layout="@layout/fragment_loginpage" >
+        <action
+            android:id="@+id/action_loginpage_to_mainMenu"
+            app:destination="@id/mainMenu" />
+    </fragment>
+    <fragment
+        android:id="@+id/startMenu"
+        android:name="com.example.lammoire.startMenu"
+        android:label="fragment_start_menu"
+        tools:layout="@layout/fragment_start_menu" >
+        <action
+            android:id="@+id/action_startMenu_to_loginpage"
+            app:destination="@id/loginpage" />
+        <action
+            android:id="@+id/action_startMenu_to_registerpage"
+            app:destination="@id/registerpage" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerpage"
+        android:name="com.example.lammoire.registerpage"
+        android:label="fragment_registerpage"
+        tools:layout="@layout/fragment_registerpage" />
+    <fragment
+        android:id="@+id/mainMenu"
+        android:name="com.example.lammoire.mainMenu"
+        android:label="fragment_main_menu"
+        tools:layout="@layout/fragment_main_menu" />
+    <fragment
+        android:id="@+id/startafterlogin"
+        android:name="com.example.lammoire.startafterlogin"
+        android:label="fragment_startafterlogin"
+        tools:layout="@layout/fragment_startafterlogin" >
+        <action
+            android:id="@+id/action_startafterlogin_to_mainMenu"
+            app:destination="@id/mainMenu" />
+    </fragment>
+</navigation>
