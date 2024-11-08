@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.lammoire"
-    compileSdk = 30
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.lammoire"
