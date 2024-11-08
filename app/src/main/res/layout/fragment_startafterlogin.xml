@@ -1,18 +1,28 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lammoire.loginpage">
+    android:orientation="vertical"
+    tools:context="com.example.lammoire.mainMenu"
+    android:background="#FFECAD">
 
-    <ImageView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" >
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Mulai Menulis"
-        />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/base2"
+            android:layout_marginBottom="300dp" />
 
-</FrameLayout>
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Mulai Menulis"
+            android:backgroundTint="#B68730"/>
+    </FrameLayout>
+</LinearLayout>
