@@ -1,8 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.lammoire.mainMenu">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.lammoire.mainMenu"
+    android:background="#FFECAD">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,7 +14,8 @@
 
         <Toolbar
             android:layout_width="match_parent"
-            android:layout_height="125px" />
+            android:layout_height="125px"
+            android:background="#B68730"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -26,5 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:backgroundTint="#B68730"
+        android:src="@drawable/baseline_add_24" />
 </FrameLayout>

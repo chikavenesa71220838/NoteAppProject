@@ -1,30 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.lammoire.mainMenu">
+    tools:context="com.example.lammoire.mainMenu"
+    android:background="#FFECAD">
 
-    <TextView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="start menu"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="match_parent" >
 
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        android:layout_margin="8dp"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/base2"
+            android:layout_marginBottom="300dp" />
 
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login"
-        android:layout_margin="8dp"/>
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="buat akun baru"
+            android:backgroundTint="#B68730"/>
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:text="sudah memiliki akun? masuk"
+            android:layout_marginBottom="280dp"
+            android:layout_gravity="bottom|center"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"/>
+    </FrameLayout>
 </LinearLayout>
