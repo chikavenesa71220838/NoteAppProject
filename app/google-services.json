@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "244050392472",
+    "project_id": "noteappproject-18862",
+    "storage_bucket": "noteappproject-18862.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244050392472:android:6f2a98f5f3bc81fff8e7ed",
+        "android_client_info": {
+          "package_name": "com.example.lammoire"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2vX18e2nwbxrBHLPCZhO7Tb5fl27TQj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
