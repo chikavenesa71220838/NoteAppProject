@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.lammoire.mainMenu"
+    tools:context=".mainMenu"
     android:background="#FFECAD">
 
     <LinearLayout
@@ -12,10 +11,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Toolbar
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="125px"
-            android:background="#B68730"/>
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#B68730"/>
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
 
         <TextView
             android:layout_width="match_parent"
