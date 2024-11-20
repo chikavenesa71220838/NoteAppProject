@@ -5,18 +5,19 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
+//    private lateinit var auth: FirebaseAuth
 
+    // In your MainActivity.kt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        val currentUser = auth.currentUser
-//        if (currentUser != null) {
-//            setContentView(R.layout.fragment_startafterlogin)
-//        } else {
-//            setContentView(R.layout.fragment_start_menu)
-//        }
+        val sharedPreferences = getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
+        val logged = sharedPreferences.getBoolean("is_logged_in", false)
 
-        setContentView(R.layout.activity_main)
+        if (logged) {
+            setContentView(R.layout.fragment_startafterlogin)
+        } else {
+            setContentView(R.layout.activity_main)
+        }
     }
 }

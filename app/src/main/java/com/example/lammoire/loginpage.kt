@@ -43,6 +43,14 @@ class loginpage : Fragment(R.layout.fragment_loginpage) {
         return view
     }
 
+    private fun simpanSession(email: String) {
+        val sharedPreferences = requireActivity().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("user_email", email)
+        editor.putBoolean("is_logged_in", true)
+        editor.apply()
+    }
+
     private fun login(view: View) {
         val email = view.findViewById<EditText>(R.id.username).text.toString()
         val password = view.findViewById<EditText>(R.id.password).text.toString()
@@ -51,10 +59,10 @@ class loginpage : Fragment(R.layout.fragment_loginpage) {
             Toast.makeText(context, "tolong lengkapi data yang kosong", Toast.LENGTH_SHORT).show()
             return
         }
-
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    simpanSession(email)
                     findNavController().navigate(R.id.action_loginpage_to_mainMenu)
                 } else {
                     Toast.makeText(context, "login gagal, pastikan email atau password tepat", Toast.LENGTH_SHORT).show()
