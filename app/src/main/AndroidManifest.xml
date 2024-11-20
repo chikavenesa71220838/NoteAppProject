@@ -12,6 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LaMémoire"
         tools:targetApi="31" >
+        <activity android:name=".loginpage"></activity>
+        <activity android:name=".mainMenu"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true" >

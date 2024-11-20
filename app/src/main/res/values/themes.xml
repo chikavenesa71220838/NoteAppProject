@@ -3,6 +3,9 @@
     <style name="Base.Theme.LaMémoire" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">#B68730</item>
+        <item name="colorPrimaryDark">#B68730</item> <!-- This is the color of the status bar -->
+        <item name="colorAccent">#FFECAD</item>
     </style>
 
     <style name="Theme.LaMémoire" parent="Base.Theme.LaMémoire" />
