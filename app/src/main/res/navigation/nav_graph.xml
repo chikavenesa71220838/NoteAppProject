@@ -25,9 +25,6 @@
         <action
             android:id="@+id/action_startMenu_to_registerpage"
             app:destination="@id/registerpage" />
-        <action
-            android:id="@+id/action_startMenu_to_startafterlogin"
-            app:destination="@id/startafterlogin" />
     </fragment>
     <fragment
         android:id="@+id/registerpage"
