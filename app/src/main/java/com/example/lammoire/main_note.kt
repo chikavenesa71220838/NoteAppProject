@@ -1,59 +1,70 @@
 package com.example.lammoire
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import android.view.Window
+import android.view.WindowManager
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.fragment.findNavController
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [main_note.newInstance] factory method to
- * create an instance of this fragment.
- */
 class main_note : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        firestore = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
+        changeStatusBarColor("#B68730")
+    }
+
+    private fun changeStatusBarColor(color: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window: Window = requireActivity().window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = android.graphics.Color.parseColor(color)
         }
     }
 
+
+
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_note, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_main_note, container, false)
+        val editText = view.findViewById<EditText>(R.id.editText)
+        val saveButton = view.findViewById<Button>(R.id.saveButton)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment main_note.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            main_note().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        val toolLog = view.findViewById<Toolbar>(R.id.toolbarMain)
+        toolLog.setNavigationIcon(R.drawable.baseline_arrow_back_24)
+        toolLog.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        saveButton.setOnClickListener {
+            val text = editText.text.toString()
+            val userId = auth.currentUser?.uid
+            if (text.isNotEmpty() && userId != null) {
+                val note = hashMapOf("text" to text)
+                firestore.collection("users").document(userId).collection("notes").add(note)
+                Toast.makeText(context, "Note saved!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Please enter a note!", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        return view
     }
 }

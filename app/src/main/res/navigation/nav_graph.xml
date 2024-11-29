@@ -30,7 +30,11 @@
         android:id="@+id/registerpage"
         android:name="com.example.lammoire.registerpage"
         android:label="fragment_registerpage"
-        tools:layout="@layout/fragment_registerpage" />
+        tools:layout="@layout/fragment_registerpage" >
+        <action
+            android:id="@+id/action_registerpage_to_loginpage"
+            app:destination="@id/loginpage" />
+    </fragment>
     <fragment
         android:id="@+id/mainMenu"
         android:name="com.example.lammoire.mainMenu"
@@ -39,6 +43,9 @@
         <action
             android:id="@+id/action_mainMenu_to_main_note"
             app:destination="@id/main_note" />
+        <action
+            android:id="@+id/action_mainMenu_to_loginpage"
+            app:destination="@id/loginpage" />
     </fragment>
     <fragment
         android:id="@+id/startafterlogin"

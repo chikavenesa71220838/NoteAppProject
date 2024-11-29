@@ -1,9 +1,12 @@
 package com.example.lammoire
 
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.findNavController
+import android.view.Window
+import android.view.WindowManager
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,5 +24,12 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.startMenu)
         }
 
+    }
+    private fun changeStatusBarColor(color: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window: Window = window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = android.graphics.Color.parseColor(color)
+        }
     }
 }

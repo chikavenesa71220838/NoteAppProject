@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="buat akun baru"
+            android:textColor="@color/black"
             android:backgroundTint="#B68730"/>
 
         <Button
