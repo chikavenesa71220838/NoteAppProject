@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.lammoire.mainMenu"
+    tools:context="com.example.lammoire.startafterlogin"
     android:background="#FFECAD">
 
-    <FrameLayout
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:src="@drawable/base2"
+        android:layout_marginBottom="300dp"
+        android:clickable="false"/>
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/base2"
-            android:layout_marginBottom="300dp" />
-
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="240dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Mulai Menulis"
-            android:backgroundTint="#B68730"/>
-    </FrameLayout>
-</LinearLayout>
+    <Button
+        android:id="@+id/btnGatau"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/mulai_menulis"
+        android:backgroundTint="#B68730"
+        android:textColor="@color/black"
+        android:elevation="10dp" />
+</FrameLayout>

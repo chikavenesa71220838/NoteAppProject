@@ -10,24 +10,14 @@ import android.widget.Button
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 
-class startMenu : Fragment() {
+class startMenu : Fragment(R.layout.fragment_start_menu) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_start_menu, container, false)
-
-//        val auth = FirebaseAuth.getInstance()
-//        val logged = auth.currentUser
         val btnRegister = view.findViewById<Button>(R.id.btnRegister)
         val btnLogin = view.findViewById<Button>(R.id.btnLogin)
-
-//
-//        if (logged != null) {
-//            val intent = Intent(requireContext(), mainMenu::class.java)
-//            startActivity(intent)
-//        }
-
 
         btnRegister.setOnClickListener {
             findNavController().navigate(R.id.action_startMenu_to_registerpage)
