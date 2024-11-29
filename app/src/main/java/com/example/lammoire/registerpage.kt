@@ -1,7 +1,6 @@
 package com.example.lammoire
 
-import android.annotation.SuppressLint
-import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,14 +13,27 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import android.view.Window
+import android.view.WindowManager
 
 class registerpage : Fragment(R.layout.fragment_registerpage) {
     private lateinit var auth: FirebaseAuth
+    private val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
+        changeStatusBarColor("#B68730")
+    }
+
+    private fun changeStatusBarColor(color: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window: Window = requireActivity().window
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.statusBarColor = android.graphics.Color.parseColor(color)
+        }
     }
 
     override fun onCreateView(
@@ -50,23 +62,44 @@ class registerpage : Fragment(R.layout.fragment_registerpage) {
         val confirmPass = view.findViewById<EditText>(R.id.confirmPasswordRegis).text.toString()
 
         if (email.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
-            Toast.makeText(context, "tolong isi dengan lengkap", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Tolong isi dengan lengkap", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (pass != confirmPass) {
-            Toast.makeText(context, "password tidak cocok", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Password tidak cocok", Toast.LENGTH_SHORT).show()
             return
         }
 
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val intent = Intent(requireContext(), loginpage::class.java)
-                    startActivity(intent)
+                    val userId = auth.currentUser?.uid
+                    if (userId != null) {
+                        saveUserToFirestore(userId, email)
+                    } else {
+                        Toast.makeText(context, "Gagal mendapatkan user ID", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    Toast.makeText(context, "registrasi gagal, tolong coba lagi", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Registrasi gagal, tolong coba lagi", Toast.LENGTH_SHORT).show()
                 }
+            }
+    }
+
+    private fun saveUserToFirestore(userId: String, email: String) {
+        val user = hashMapOf(
+            "userId" to userId,
+            "email" to email
+        )
+
+        db.collection("users").document(userId)
+            .set(user)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_registerpage_to_loginpage)
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Gagal menyimpan data: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
