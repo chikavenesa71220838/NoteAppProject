@@ -15,12 +15,15 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import android.view.Window
 import android.view.WindowManager
+import java.util.regex.Pattern
 
 class loginpage : Fragment(R.layout.fragment_loginpage) {
     private lateinit var auth: FirebaseAuth
+    private val db = Firebase.firestore
     var backButtonTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +31,7 @@ class loginpage : Fragment(R.layout.fragment_loginpage) {
         auth = Firebase.auth
         changeStatusBarColor("#B68730")
     }
+
     private fun changeStatusBarColor(color: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val window: Window = requireActivity().window
@@ -45,7 +49,7 @@ class loginpage : Fragment(R.layout.fragment_loginpage) {
         val toolLog = view.findViewById<Toolbar>(R.id.toolbarLogin)
         toolLog.setNavigationIcon(R.drawable.baseline_arrow_back_24)
         toolLog.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            findNavController().navigate(R.id.action_loginpage_to_startMenu)
         }
 
         val loginButton = view.findViewById<Button>(R.id.loginButton)
@@ -54,14 +58,11 @@ class loginpage : Fragment(R.layout.fragment_loginpage) {
         }
 
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
-            // This function is called automatically when the inbuilt back button is pressed
             override fun handleOnBackPressed() {
-                //
-                // Checks whether the time elapsed between two consecutive back button presses is less than 3 seconds.
                 if (backButtonTime + 3000 > System.currentTimeMillis()) {
                     requireActivity().finish()
                 } else {
-                    Toast.makeText(context, "Press back again to leave the app.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "tekan sekali lagi untuk kembali", Toast.LENGTH_LONG).show()
                 }
                 backButtonTime = System.currentTimeMillis()
             }
@@ -79,22 +80,53 @@ class loginpage : Fragment(R.layout.fragment_loginpage) {
         editor.apply()
     }
 
+    private fun isEmail(input: String): Boolean {
+        val emailPattern = Pattern.compile(".+@.+")
+        return emailPattern.matcher(input).matches()
+    }
+
     private fun login(view: View) {
-        val email = view.findViewById<EditText>(R.id.username).text.toString()
+        val input = view.findViewById<EditText>(R.id.username).text.toString()
         val password = view.findViewById<EditText>(R.id.password).text.toString()
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(context, "tolong lengkapi data yang kosong", Toast.LENGTH_SHORT).show()
+        if (input.isEmpty() || password.isEmpty()) {
+            Toast.makeText(context, "tolong lengkapi data yang ada", Toast.LENGTH_SHORT).show()
             return
         }
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    simpanSession(email)
-                    findNavController().navigate(R.id.action_loginpage_to_mainMenu)
-                } else {
-                    Toast.makeText(context, "login gagal, pastikan email atau password tepat", Toast.LENGTH_SHORT).show()
+
+        if (isEmail(input)) {
+            auth.signInWithEmailAndPassword(input, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        simpanSession(input)
+                        findNavController().navigate(R.id.action_loginpage_to_mainMenu)
+                    } else {
+                        Toast.makeText(context, "login gagal, tolong cek kembali data anda", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
+        } else {
+            db.collection("users").whereEqualTo("username", input).get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        Toast.makeText(context, "username tidak ditemukan", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val email = documents.documents[0].getString("email")
+                        if (email != null) {
+                            auth.signInWithEmailAndPassword(email, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        simpanSession(email)
+                                        findNavController().navigate(R.id.action_loginpage_to_mainMenu)
+                                    } else {
+                                        Toast.makeText(context, "login gagal, tolong cek kembali data anda", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        }
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 }

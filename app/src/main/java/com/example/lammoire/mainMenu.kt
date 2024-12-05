@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.view.Window
 import android.view.WindowManager
+import androidx.navigation.navArgs
 
 class mainMenu : Fragment(R.layout.fragment_main_menu) {
 //    private lateinit var sharedpreferences: SharedPreferences
@@ -30,10 +31,11 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         val view = inflater.inflate(R.layout.fragment_main_menu, container, false)
 
         val toolLog = view.findViewById<Toolbar>(R.id.toolMain)
-        toolLog.setNavigationIcon(R.drawable.baseline_arrow_back_24)
+        toolLog.setNavigationIcon(R.drawable.baseline_account_circle_24)
         toolLog.setNavigationOnClickListener {
-            requireActivity().finish()
+            findNavController().navigate(R.id.action_mainMenu_to_profile)
         }
+
         changeStatusBarColor("#B68730")
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
             // This function is called automatically when the inbuilt back button is pressed
@@ -43,7 +45,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
                 if (backButtonTime + 3000 > System.currentTimeMillis()) {
                     requireActivity().finish()
                 } else {
-                    Toast.makeText(context, "Press back again to leave the app.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "tekan sekali lagi untuk kembali", Toast.LENGTH_LONG).show()
                 }
                 backButtonTime = System.currentTimeMillis()
             }
@@ -55,15 +57,6 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
             findNavController().navigate(R.id.action_mainMenu_to_main_note)
         }
 
-        val sharedPreferences = requireActivity().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
-
-        val lgout = view.findViewById<Button>(R.id.logout)
-        lgout.setOnClickListener {
-            val edt = sharedPreferences.edit()
-            edt.clear()
-            edt.apply()
-            findNavController().navigate(R.id.action_mainMenu_to_loginpage)
-        }
         return view
     }
     private fun changeStatusBarColor(color: String) {

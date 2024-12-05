@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_loginpage_to_mainMenu"
             app:destination="@id/mainMenu" />
+        <action
+            android:id="@+id/action_loginpage_to_startMenu"
+            app:destination="@id/startMenu" />
     </fragment>
     <fragment
         android:id="@+id/startMenu"
@@ -46,6 +49,9 @@
         <action
             android:id="@+id/action_mainMenu_to_loginpage"
             app:destination="@id/loginpage" />
+        <action
+            android:id="@+id/action_mainMenu_to_profile"
+            app:destination="@id/profile" />
     </fragment>
     <fragment
         android:id="@+id/startafterlogin"
@@ -61,4 +67,13 @@
         android:name="com.example.lammoire.main_note"
         android:label="fragment_main_note"
         tools:layout="@layout/fragment_main_note" />
+    <fragment
+        android:id="@+id/profile"
+        android:name="com.example.lammoire.profile"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profile_to_loginpage"
+            app:destination="@id/loginpage" />
+    </fragment>
 </navigation>

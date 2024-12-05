@@ -1,5 +1,6 @@
 package com.example.lammoire
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -56,12 +57,14 @@ class registerpage : Fragment(R.layout.fragment_registerpage) {
         return view
     }
 
+    @SuppressLint("CutPasteId")
     private fun register(view: View) {
+        val uname = view.findViewById<EditText>(R.id.usernameRegis).text.toString()
         val email = view.findViewById<EditText>(R.id.emailRegis).text.toString()
         val pass = view.findViewById<EditText>(R.id.passwordRegis).text.toString()
         val confirmPass = view.findViewById<EditText>(R.id.confirmPasswordRegis).text.toString()
 
-        if (email.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
+        if (uname.isEmpty() || email.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
             Toast.makeText(context, "Tolong isi dengan lengkap", Toast.LENGTH_SHORT).show()
             return
         }
@@ -74,9 +77,10 @@ class registerpage : Fragment(R.layout.fragment_registerpage) {
         auth.createUserWithEmailAndPassword(email, pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    val username = view.findViewById<EditText>(R.id.usernameRegis).text.toString()
                     val userId = auth.currentUser?.uid
                     if (userId != null) {
-                        saveUserToFirestore(userId, email)
+                        saveUserToFirestore(userId, email, username)
                     } else {
                         Toast.makeText(context, "Gagal mendapatkan user ID", Toast.LENGTH_SHORT).show()
                     }
@@ -86,8 +90,9 @@ class registerpage : Fragment(R.layout.fragment_registerpage) {
             }
     }
 
-    private fun saveUserToFirestore(userId: String, email: String) {
+    private fun saveUserToFirestore(userId: String, email: String, uname: String) {
         val user = hashMapOf(
+            "username" to uname,
             "userId" to userId,
             "email" to email
         )

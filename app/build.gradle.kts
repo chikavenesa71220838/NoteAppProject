@@ -56,4 +56,5 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation ("androidx.biometric:biometric:1.2.0-alpha04")
     implementation ("com.google.firebase:firebase-firestore-ktx:24.1.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
 }
