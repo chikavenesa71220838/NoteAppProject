@@ -59,8 +59,8 @@ class main_note : Fragment(R.layout.fragment_main_note) {
             val text = editText.text.toString()
             val userId = auth.currentUser?.uid
             if (text.isNotEmpty() && userId != null) {
-                if (noteId != null && noteId!!.isNotEmpty()) {
-                    val noteRef = firestore.collection("users").document(userId).collection("notes").document(noteId!!)
+                if (noteId != null && noteId.isNotEmpty()) {
+                    val noteRef = firestore.collection("users").document(userId).collection("notes").document(noteId)
                     noteRef.update("text", text)
                 } else {
                     val note = hashMapOf("text" to text)
