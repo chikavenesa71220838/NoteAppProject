@@ -62,6 +62,11 @@ class profile : Fragment(R.layout.fragment_profile) {
             findNavController().navigate(R.id.action_profile_to_loginpage)
         }
 
+        val reset = view.findViewById<Button>(R.id.resetPasswordButton)
+        reset.setOnClickListener {
+            findNavController().navigate(R.id.action_profile_to_reset)
+        }
+
         return view
     }
 

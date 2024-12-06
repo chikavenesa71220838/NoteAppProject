@@ -75,5 +75,17 @@
         <action
             android:id="@+id/action_profile_to_loginpage"
             app:destination="@id/loginpage" />
+        <action
+            android:id="@+id/action_profile_to_reset"
+            app:destination="@id/reset" />
+    </fragment>
+    <fragment
+        android:id="@+id/reset"
+        android:name="com.example.lammoire.reset"
+        android:label="fragment_reset"
+        tools:layout="@layout/fragment_reset" >
+        <action
+            android:id="@+id/action_reset_to_loginpage"
+            app:destination="@id/loginpage" />
     </fragment>
 </navigation>
