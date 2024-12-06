@@ -60,11 +60,9 @@ class main_note : Fragment(R.layout.fragment_main_note) {
             val userId = auth.currentUser?.uid
             if (text.isNotEmpty() && userId != null) {
                 if (noteId != null && noteId!!.isNotEmpty()) {
-                    // Update existing note
                     val noteRef = firestore.collection("users").document(userId).collection("notes").document(noteId!!)
                     noteRef.update("text", text)
                 } else {
-                    // Add new note
                     val note = hashMapOf("text" to text)
                     firestore.collection("users").document(userId).collection("notes").add(note)
                 }
