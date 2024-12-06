@@ -60,6 +60,7 @@ class main_note : Fragment() {
                 val note = hashMapOf("text" to text)
                 firestore.collection("users").document(userId).collection("notes").add(note)
                 Toast.makeText(context, "Note saved!", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_main_note_to_mainMenu)
             } else {
                 Toast.makeText(context, "Please enter a note!", Toast.LENGTH_SHORT).show()
             }

@@ -1,59 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.lammoire.registerpage"
-    android:background="#FFECAD">
+    android:background="#FFECAD"
+    tools:context=".profile">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbarRegis"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#B68730" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_marginTop="32dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Daftar"
-        android:textSize="24sp"
-        android:textColor="@android:color/black"/>
-
-    <TextView
-        android:layout_marginTop="24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Username"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:hint="Username">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/usernameRegis"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbarProf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:background="@drawable/circle"
-            android:textColor="@color/black"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:background="#B68730">
+        </androidx.appcompat.widget.Toolbar>
+    </FrameLayout>
 
     <TextView
-        android:layout_marginTop="24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Email"
+        android:text="New Password"
         android:textSize="18sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black"
+        android:layout_marginTop="16dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -61,39 +35,14 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:hint="Email">
+        android:hint="New Password">
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/emailRegis"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:background="@drawable/circle"
-            android:textColor="@color/black"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:layout_marginTop="24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Password"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:hint="Password">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/passwordRegis"
+            android:id="@+id/newPasse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:background="@drawable/circle"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -103,7 +52,7 @@
         android:layout_marginStart="16dp"
         android:text="Confirm Password"
         android:textSize="18sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -113,25 +62,68 @@
         android:layout_marginEnd="16dp"
         android:hint="Confirm Password">
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/confirmPasswordRegis"
+            android:id="@+id/confNewPasse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:background="@drawable/circle"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_marginTop="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Old Password"
+        android:textSize="18sp"
+        android:textColor="@android:color/black" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Old Password">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/oldPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:background="@drawable/circle"
+            android:textColor="@color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/registerButton"
-        android:layout_marginTop="32dp"
-        android:layout_width="120dp"
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
         android:layout_gravity="center"
-        android:text="Daftar"
+        android:text="Save"
         android:backgroundTint="@color/custon"
         android:textColor="@android:color/white"
-        android:padding="16dp"/>
+        android:padding="16dp" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFECAD"
+        tools:context=".profile">
+
+        <Button
+            android:id="@+id/resetPasswordButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/custon"
+            android:padding="16dp"
+            android:text="Reset Password"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

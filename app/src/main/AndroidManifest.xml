@@ -25,5 +25,6 @@
         <activity android:name=".startafterlogin"></activity>
         <activity android:name=".mainMenu"></activity>
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
