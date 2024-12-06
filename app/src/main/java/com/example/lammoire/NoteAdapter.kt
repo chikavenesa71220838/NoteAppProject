@@ -1,5 +1,7 @@
 package com.example.lammoire
 
+import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +20,16 @@ class NoteAdapter(private var notes: List<Note>) : RecyclerView.Adapter<NoteAdap
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.noteText.text = notes[position].text
+        val note = notes[position]
+        holder.noteText.text = note.text
+        holder.itemView.setOnClickListener {
+            val navController = androidx.navigation.Navigation.findNavController(holder.itemView)
+            val bundle = Bundle().apply {
+                putString("NOTE_ID", note.id)
+                putString("NOTE_TEXT", note.text)
+            }
+            navController.navigate(R.id.action_mainMenu_to_main_note, bundle)
+        }
     }
 
     override fun getItemCount(): Int {

@@ -19,6 +19,7 @@ class NoteViewModel : ViewModel() {
             .addOnSuccessListener { result ->
                 val noteList = result.map { document ->
                     Note(
+                        id = document.id,
                         text = document.getString("text") ?: ""
                     )
                 }
