@@ -67,6 +67,9 @@
         android:name="com.example.lammoire.main_note"
         android:label="fragment_main_note"
         tools:layout="@layout/fragment_main_note" >
+        <argument
+            android:name="noteText"
+            app:argType="string" />
         <action
             android:id="@+id/action_main_note_to_mainMenu"
             app:destination="@id/mainMenu" />

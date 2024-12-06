@@ -17,7 +17,7 @@ import android.view.WindowManager
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 
-class main_note : Fragment() {
+class main_note : Fragment(R.layout.fragment_main_note) {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
 
@@ -36,8 +36,6 @@ class main_note : Fragment() {
         }
     }
 
-
-
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +44,10 @@ class main_note : Fragment() {
         val view = inflater.inflate(R.layout.fragment_main_note, container, false)
         val editText = view.findViewById<EditText>(R.id.editText)
         val saveButton = view.findViewById<Button>(R.id.saveButton)
+
+        val noteId = arguments?.getString("NOTE_ID")
+        val noteText = arguments?.getString("NOTE_TEXT")
+        editText.setText(noteText)
 
         val toolLog = view.findViewById<Toolbar>(R.id.toolbarMain)
         toolLog.setNavigationIcon(R.drawable.baseline_arrow_back_24)
@@ -57,8 +59,15 @@ class main_note : Fragment() {
             val text = editText.text.toString()
             val userId = auth.currentUser?.uid
             if (text.isNotEmpty() && userId != null) {
-                val note = hashMapOf("text" to text)
-                firestore.collection("users").document(userId).collection("notes").add(note)
+                if (noteId != null && noteId!!.isNotEmpty()) {
+                    // Update existing note
+                    val noteRef = firestore.collection("users").document(userId).collection("notes").document(noteId!!)
+                    noteRef.update("text", text)
+                } else {
+                    // Add new note
+                    val note = hashMapOf("text" to text)
+                    firestore.collection("users").document(userId).collection("notes").add(note)
+                }
                 Toast.makeText(context, "Note saved!", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.action_main_note_to_mainMenu)
             } else {

@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="200dp"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@drawable/note_background"
+    android:elevation="4dp"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <TextView
         android:id="@+id/noteText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:textSize="16sp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:padding="8dp"
+        android:maxLines="10"
+        android:ellipsize="end" />
 </LinearLayout>
