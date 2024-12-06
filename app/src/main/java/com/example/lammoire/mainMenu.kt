@@ -17,10 +17,20 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import android.view.Window
 import android.view.WindowManager
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.navArgs
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class mainMenu : Fragment(R.layout.fragment_main_menu) {
-//    private lateinit var sharedpreferences: SharedPreferences
+    private lateinit var auth: FirebaseAuth
+    private val noteViewModel: NoteViewModel by viewModels()
+    private lateinit var noteAdapter: NoteAdapter
 
     var backButtonTime: Long = 0
     @SuppressLint("MissingInflatedId")
@@ -38,10 +48,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
 
         changeStatusBarColor("#B68730")
         val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) {
-            // This function is called automatically when the inbuilt back button is pressed
             override fun handleOnBackPressed() {
-                //
-                // Checks whether the time elapsed between two consecutive back button presses is less than 3 seconds.
                 if (backButtonTime + 3000 > System.currentTimeMillis()) {
                     requireActivity().finish()
                 } else {
@@ -57,8 +64,28 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
             findNavController().navigate(R.id.action_mainMenu_to_main_note)
         }
 
+        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
+
+        noteAdapter = NoteAdapter(emptyList())
+        recyclerView.adapter = noteAdapter
+        recyclerView.layoutManager = GridLayoutManager(context, 2)
+
         return view
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+0
+        auth = Firebase.auth
+
+        val userId = auth.currentUser?.uid ?: ""
+        noteViewModel.fetchNotes(userId)
+
+        noteViewModel.notes.observe(viewLifecycleOwner, Observer { notes ->
+            noteAdapter.updateData(notes)
+        })
+    }
+
     private fun changeStatusBarColor(color: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val window: Window = requireActivity().window

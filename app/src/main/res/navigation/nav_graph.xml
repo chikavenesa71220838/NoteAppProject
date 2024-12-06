@@ -66,7 +66,11 @@
         android:id="@+id/main_note"
         android:name="com.example.lammoire.main_note"
         android:label="fragment_main_note"
-        tools:layout="@layout/fragment_main_note" />
+        tools:layout="@layout/fragment_main_note" >
+        <action
+            android:id="@+id/action_main_note_to_mainMenu"
+            app:destination="@id/mainMenu" />
+    </fragment>
     <fragment
         android:id="@+id/profile"
         android:name="com.example.lammoire.profile"
