@@ -39,7 +39,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_main_menu, container, false)
 
-        auth = Firebase.auth  // Initialize auth here
+        auth = Firebase.auth
         db = FirebaseFirestore.getInstance()
 
         val toolLog = view.findViewById<Toolbar>(R.id.toolMain)
@@ -71,7 +71,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
 
-        noteAdapter = NoteAdapter(emptyList())
+        noteAdapter = NoteAdapter(mutableListOf())
         recyclerView.adapter = noteAdapter
         recyclerView.layoutManager = GridLayoutManager(context, 2)
 
@@ -100,8 +100,14 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         noteViewModel.fetchNotes(userId)
 
         noteViewModel.notes.observe(viewLifecycleOwner, Observer { notes ->
-            noteAdapter.updateData(notes)
+            noteAdapter.updateData(notes.toMutableList())
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val userId = auth.currentUser?.uid ?: ""
+        noteViewModel.fetchNotes(userId)
     }
 
     private fun changeStatusBarColor(color: String) {

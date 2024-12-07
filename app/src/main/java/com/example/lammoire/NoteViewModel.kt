@@ -15,19 +15,22 @@ class NoteViewModel : ViewModel() {
 
     fun fetchNotes(userId: String) {
         db.collection("users").document(userId).collection("notes")
-            .get()
-            .addOnSuccessListener { result ->
-                val noteList = result.map { document ->
-                    Note(
-                        id = document.id,
-                        text = document.getString("text") ?: ""
-                    )
+            .addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    Toast.makeText(null, "Error fetching notes", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
-                _notes.value = noteList
-            }
-            .addOnFailureListener { exception ->
-                // Handle any errors here
-                Toast.makeText(null, "Error fetching notes", Toast.LENGTH_SHORT).show()
+                if (snapshots != null) {
+                    val noteList = snapshots.map { document ->
+                        Note(
+                            id = document.id,
+                            text = document.getString("text") ?: "",
+                            timestamp = document.getLong("timestamp") ?: 0L
+                        )
+                    }
+                    _notes.value = noteList
+                }
             }
     }
+
 }

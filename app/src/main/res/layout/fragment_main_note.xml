@@ -63,8 +63,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
-
-        android:text="1 Januari 2024 15:16"
         android:textColor="@android:color/black"
         android:textSize="17sp"
         android:layout_marginTop="70dp"
