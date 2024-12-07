@@ -13,6 +13,9 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
 
@@ -26,10 +29,17 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
         return NoteViewHolder(view)
     }
 
-    @SuppressLint("ResourceType")
+    @SuppressLint("SimpleDateFormat", "ResourceType")
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = notes[position]
         holder.noteText.text = note.text
+
+        val timestamp = note.timestamp
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+        val dateText = dateFormat.format(Date(timestamp))
+
+        holder.itemView.findViewById<TextView>(R.id.noteTimestamp).text = dateText
+
         holder.menuButton.setOnClickListener {
             val popupMenu = PopupMenu(holder.itemView.context, holder.menuButton)
             popupMenu.inflate(R.layout.note_menu)
@@ -49,20 +59,28 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
             val bundle = Bundle().apply {
                 putString("NOTE_ID", note.id)
                 putString("NOTE_TEXT", note.text)
-                putLong("NOTE_TIMESTAMP", note.timestamp)
+                putLong("timestamp", note.timestamp)
             }
             navController.navigate(R.id.action_mainMenu_to_main_note, bundle)
         }
     }
+
 
     override fun getItemCount(): Int {
         return notes.size
     }
 
     fun updateData(newNotes: List<Note>) {
-        this.notes = newNotes.toMutableList()
+        this.notes = newNotes.map { note ->
+            Note(
+                id = note.id,
+                text = note.text,
+                timestamp = note.timestamp
+            )
+        }.toMutableList()
         notifyDataSetChanged()
     }
+
 
     private fun deleteNoteFromFirebase(context: Context, noteId: String, position: Int) {
         val db = FirebaseFirestore.getInstance()

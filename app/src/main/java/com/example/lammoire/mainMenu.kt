@@ -39,7 +39,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_main_menu, container, false)
 
-        auth = Firebase.auth  // Initialize auth here
+        auth = Firebase.auth
         db = FirebaseFirestore.getInstance()
 
         val toolLog = view.findViewById<Toolbar>(R.id.toolMain)

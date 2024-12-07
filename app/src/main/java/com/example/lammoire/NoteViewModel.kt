@@ -20,7 +20,8 @@ class NoteViewModel : ViewModel() {
                 val noteList = result.map { document ->
                     Note(
                         id = document.id,
-                        text = document.getString("text") ?: ""
+                        text = document.getString("text") ?: "",
+                        timestamp = document.getLong("timestamp") ?: 0L
                     )
                 }
                 _notes.value = noteList

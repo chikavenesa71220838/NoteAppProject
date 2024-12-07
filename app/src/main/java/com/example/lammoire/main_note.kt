@@ -14,8 +14,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.view.Window
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class main_note : Fragment(R.layout.fragment_main_note) {
     private lateinit var firestore: FirebaseFirestore
@@ -36,7 +40,7 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         }
     }
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,9 +49,20 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         val editText = view.findViewById<EditText>(R.id.editText)
         val saveButton = view.findViewById<Button>(R.id.saveButton)
 
+        val noteTimestamp = arguments?.getLong("timestamp") ?: System.currentTimeMillis()
         val noteId = arguments?.getString("NOTE_ID")
         val noteText = arguments?.getString("NOTE_TEXT")
+
         editText.setText(noteText)
+
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+        val timestampView = view.findViewById<TextView>(R.id.tanggal)
+        val timestampText = if (noteTimestamp > 0L) {
+            dateFormat.format(Date(noteTimestamp))
+        } else {
+            ""
+        }
+        timestampView.text = timestampText
 
         val toolLog = view.findViewById<Toolbar>(R.id.toolbarMain)
         toolLog.setNavigationIcon(R.drawable.baseline_arrow_back_24)
@@ -58,21 +73,47 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         saveButton.setOnClickListener {
             val text = editText.text.toString()
             val userId = auth.currentUser?.uid
+
             if (text.isNotEmpty() && userId != null) {
-                if (noteId != null && noteId.isNotEmpty()) {
-                    val noteRef = firestore.collection("users").document(userId).collection("notes").document(noteId)
-                    noteRef.update("text", text)
+                val noteRef = firestore.collection("users").document(userId).collection("notes")
+
+                if (!noteId.isNullOrEmpty()) {
+                    noteRef.document(noteId).get().addOnSuccessListener { document ->
+                        if (document != null) {
+                            val existingTimestamp = document.getLong("timestamp") ?: System.currentTimeMillis()
+                            val updatedNote = mapOf(
+                                "text" to text,
+                                "timestamp" to existingTimestamp
+                            )
+                            noteRef.document(noteId).set(updatedNote)
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Catatan diperbarui", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(context, "Gagal memperbarui catatan", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                    }
                 } else {
-                    val note = hashMapOf("text" to text)
-                    firestore.collection("users").document(userId).collection("notes").add(note)
+                    val newNote = mapOf(
+                        "text" to text,
+                        "timestamp" to System.currentTimeMillis()
+                    )
+                    noteRef.add(newNote)
+                        .addOnSuccessListener {
+                            Toast.makeText(context, "Catatan disimpan", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(context, "Gagal menyimpan catatan", Toast.LENGTH_SHORT).show()
+                        }
                 }
-                Toast.makeText(context, "note berhasil disimpan", Toast.LENGTH_SHORT).show()
+
                 findNavController().navigate(R.id.action_main_note_to_mainMenu)
             } else {
-                Toast.makeText(context, "tidak bisa membuat note kosong", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Tidak bisa membuat catatan kosong", Toast.LENGTH_SHORT).show()
             }
         }
-
         return view
     }
+
 }
