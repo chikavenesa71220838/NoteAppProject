@@ -88,8 +88,11 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
             db.collection("users").document(userId).collection("notes").document(noteId)
                 .delete()
                 .addOnSuccessListener {
-                    notes.removeAt(position)
-                    notifyItemRemoved(position)
+                    val index = notes.indexOfFirst { it.id == noteId }
+                    if (index != -1) {
+                        notes.removeAt(index)
+                        notifyItemRemoved(index)
+                    }
                     Toast.makeText(context, "Berhasil terhapus!", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener {

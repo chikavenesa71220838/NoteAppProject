@@ -137,7 +137,7 @@ class main_note : Fragment(R.layout.fragment_main_note) {
     }
 
     private fun showAttachmentOptions() {
-        val options = arrayOf("pilih dari folder", "pilih dari galeri")
+        val options = arrayOf("pilih dari folder", "pilih dari galeri", "kamera")
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("pilih opsi")
         builder.setItems(options) { dialog, which ->
@@ -150,6 +150,10 @@ class main_note : Fragment(R.layout.fragment_main_note) {
                 1 -> {
                     val intent = Intent(Intent.ACTION_PICK)
                     intent.type = "image/*"
+                    pickFileLauncher.launch(intent)
+                }
+                2 -> {
+                    val intent = Intent("android.media.action.IMAGE_CAPTURE")
                     pickFileLauncher.launch(intent)
                 }
             }
