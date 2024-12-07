@@ -139,7 +139,7 @@ class main_note : Fragment(R.layout.fragment_main_note) {
     private fun showAttachmentOptions() {
         val options = arrayOf("pilih dari folder", "pilih dari galeri")
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Choose an option")
+        builder.setTitle("pilih opsi")
         builder.setItems(options) { dialog, which ->
             when (which) {
                 0 -> {
