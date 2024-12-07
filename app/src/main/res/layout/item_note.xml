@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="200dp"
@@ -10,6 +9,12 @@
     android:clickable="true"
     android:focusable="true">
 
+    <ImageView
+        android:id="@+id/menuButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/baseline_more_vert_24" />
     <TextView
         android:id="@+id/noteText"
         android:layout_width="match_parent"
@@ -19,4 +24,8 @@
         android:padding="8dp"
         android:maxLines="10"
         android:ellipsize="end" />
+
+
+
+
 </LinearLayout>
