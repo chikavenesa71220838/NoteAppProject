@@ -130,11 +130,9 @@ class main_note : Fragment(R.layout.fragment_main_note) {
                 Toast.makeText(context, "Tidak bisa membuat catatan kosong", Toast.LENGTH_SHORT).show()
             }
         }
-
         attachmentButton.setOnClickListener {
             showAttachmentOptions()
         }
-
         return view
     }
 
