@@ -71,7 +71,7 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
     }
 
     fun updateData(newNotes: List<Note>) {
-        this.notes = newNotes.map { note ->
+        this.notes = newNotes.sortedByDescending { it.timestamp }.map { note ->
             Note(
                 id = note.id,
                 text = note.text,
@@ -80,7 +80,6 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
         }.toMutableList()
         notifyDataSetChanged()
     }
-
 
     private fun deleteNoteFromFirebase(context: Context, noteId: String, position: Int) {
         val db = FirebaseFirestore.getInstance()

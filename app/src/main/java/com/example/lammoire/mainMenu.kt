@@ -104,6 +104,12 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        val userId = auth.currentUser?.uid ?: ""
+        noteViewModel.fetchNotes(userId)
+    }
+
     private fun changeStatusBarColor(color: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val window = requireActivity().window
