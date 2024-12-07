@@ -11,9 +11,13 @@
         android:label="fragment_loginpage"
         tools:layout="@layout/fragment_loginpage" >
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_loginpage_to_mainMenu"
             app:destination="@id/mainMenu" />
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_loginpage_to_startMenu"
             app:destination="@id/startMenu" />
     </fragment>
@@ -23,9 +27,13 @@
         android:label="fragment_start_menu"
         tools:layout="@layout/fragment_start_menu" >
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_startMenu_to_loginpage"
             app:destination="@id/loginpage" />
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_startMenu_to_registerpage"
             app:destination="@id/registerpage" />
     </fragment>
@@ -35,6 +43,8 @@
         android:label="fragment_registerpage"
         tools:layout="@layout/fragment_registerpage" >
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_registerpage_to_loginpage"
             app:destination="@id/loginpage" />
     </fragment>
@@ -44,12 +54,18 @@
         android:label="fragment_main_menu"
         tools:layout="@layout/fragment_main_menu" >
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_mainMenu_to_main_note"
             app:destination="@id/main_note" />
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_mainMenu_to_loginpage"
             app:destination="@id/loginpage" />
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_mainMenu_to_profile"
             app:destination="@id/profile" />
     </fragment>
@@ -59,6 +75,8 @@
         android:label="fragment_startafterlogin"
         tools:layout="@layout/fragment_startafterlogin" >
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_startafterlogin_to_mainMenu"
             app:destination="@id/mainMenu" />
     </fragment>
@@ -71,6 +89,8 @@
             android:name="noteText"
             app:argType="string" />
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_main_note_to_mainMenu"
             app:destination="@id/mainMenu" />
     </fragment>
@@ -80,9 +100,13 @@
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_profile_to_loginpage"
             app:destination="@id/loginpage" />
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_profile_to_reset"
             app:destination="@id/reset" />
     </fragment>
@@ -92,6 +116,8 @@
         android:label="fragment_reset"
         tools:layout="@layout/fragment_reset" >
         <action
+            app:enterAnim="@anim/enteranim"
+            app:exitAnim="@anim/exitanim"
             android:id="@+id/action_reset_to_loginpage"
             app:destination="@id/loginpage" />
     </fragment>
