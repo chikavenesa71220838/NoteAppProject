@@ -1,6 +1,7 @@
 package com.example.lammoire
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class NoteAdapter(private var notes: List<Note>) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
+class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
 
     class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val noteText: TextView = itemView.findViewById(R.id.noteText)
@@ -35,7 +36,7 @@ class NoteAdapter(private var notes: List<Note>) : RecyclerView.Adapter<NoteAdap
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_delete -> {
-                        deleteNoteFromFirebase(note.id)
+                        deleteNoteFromFirebase(holder.itemView.context, note.id, position)
                         true
                     }
                     else -> false
@@ -48,6 +49,7 @@ class NoteAdapter(private var notes: List<Note>) : RecyclerView.Adapter<NoteAdap
             val bundle = Bundle().apply {
                 putString("NOTE_ID", note.id)
                 putString("NOTE_TEXT", note.text)
+                putLong("NOTE_TIMESTAMP", note.timestamp)
             }
             navController.navigate(R.id.action_mainMenu_to_main_note, bundle)
         }
@@ -58,21 +60,23 @@ class NoteAdapter(private var notes: List<Note>) : RecyclerView.Adapter<NoteAdap
     }
 
     fun updateData(newNotes: List<Note>) {
-        this.notes = newNotes
+        this.notes = newNotes.toMutableList()
         notifyDataSetChanged()
     }
 
-    private fun deleteNoteFromFirebase(noteId: String) {
+    private fun deleteNoteFromFirebase(context: Context, noteId: String, position: Int) {
         val db = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
             db.collection("users").document(userId).collection("notes").document(noteId)
                 .delete()
                 .addOnSuccessListener {
-                    Toast.makeText(null, "Berhasil terhapus!", Toast.LENGTH_SHORT).show()
+                    notes.removeAt(position)
+                    notifyItemRemoved(position)
+                    Toast.makeText(context, "Berhasil terhapus!", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener {
-                    Toast.makeText(null, "Gagal dihapus!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Gagal dihapus!", Toast.LENGTH_SHORT).show()
                 }
         }
     }

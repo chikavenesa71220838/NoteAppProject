@@ -71,7 +71,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
 
-        noteAdapter = NoteAdapter(emptyList())
+        noteAdapter = NoteAdapter(mutableListOf())
         recyclerView.adapter = noteAdapter
         recyclerView.layoutManager = GridLayoutManager(context, 2)
 
@@ -100,7 +100,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         noteViewModel.fetchNotes(userId)
 
         noteViewModel.notes.observe(viewLifecycleOwner, Observer { notes ->
-            noteAdapter.updateData(notes)
+            noteAdapter.updateData(notes.toMutableList())
         })
     }
 
