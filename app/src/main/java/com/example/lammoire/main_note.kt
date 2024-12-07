@@ -80,10 +80,9 @@ class main_note : Fragment(R.layout.fragment_main_note) {
                 if (!noteId.isNullOrEmpty()) {
                     noteRef.document(noteId).get().addOnSuccessListener { document ->
                         if (document != null) {
-                            val existingTimestamp = document.getLong("timestamp") ?: System.currentTimeMillis()
                             val updatedNote = mapOf(
                                 "text" to text,
-                                "timestamp" to existingTimestamp
+                                "timestamp" to System.currentTimeMillis()
                             )
                             noteRef.document(noteId).set(updatedNote)
                                 .addOnSuccessListener {
