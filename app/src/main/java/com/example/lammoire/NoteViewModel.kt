@@ -25,12 +25,15 @@ class NoteViewModel : ViewModel() {
                         Note(
                             id = document.id,
                             text = document.getString("text") ?: "",
-                            timestamp = document.getLong("timestamp") ?: 0L
+                            timestamp = document.getLong("timestamp") ?: 0L,
+                            location = document.getString("location") ?: "Tidak diketahui",
+                            creationDate = document.getLong("creationDate") ?: 0L
                         )
                     }
                     _notes.value = noteList
                 }
             }
     }
+
 
 }

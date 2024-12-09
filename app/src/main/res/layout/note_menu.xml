@@ -4,4 +4,9 @@
         android:title="Hapus"
         android:icon="@drawable/baseline_delete_24"
         android:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_detail"
+        android:title="detail"
+        android:showAsAction="always" />
 </menu>
