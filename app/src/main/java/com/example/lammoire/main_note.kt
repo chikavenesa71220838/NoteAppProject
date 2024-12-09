@@ -33,12 +33,18 @@ import com.google.android.gms.location.LocationServices
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import java.io.File
+import java.io.FileOutputStream
 
 class main_note : Fragment(R.layout.fragment_main_note) {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var pickFileLauncher: ActivityResultLauncher<Intent>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var imageAdapter: ImageAdapter
+    private val imagePaths = mutableListOf<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,14 +55,32 @@ class main_note : Fragment(R.layout.fragment_main_note) {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        pickFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val uri: Uri? = result.data?.data
-                if (uri != null) {
-                    Toast.makeText(context, "File selected: $uri", Toast.LENGTH_SHORT).show()
+
+        pickFileLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val uri: Uri? = result.data?.data
+                    if (uri != null) {
+                        val imagePath = saveImageToLocal(uri)
+                        if (imagePath != null) {
+                            imagePaths.add(imagePath)
+                            imageAdapter.notifyDataSetChanged()
+                            Toast.makeText(context, "File selected: $uri", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
                 }
             }
-        }
+    }
+
+    private fun saveImageToLocal(uri: Uri): String? {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val file = File(requireContext().getExternalFilesDir(null), "selected_image_${System.currentTimeMillis()}.jpg")
+        val outputStream = FileOutputStream(file)
+        inputStream?.copyTo(outputStream)
+        inputStream?.close()
+        outputStream.close()
+        return file.absolutePath
     }
 
     private fun changeStatusBarColor(color: String) {
@@ -76,6 +100,11 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         val editText = view.findViewById<EditText>(R.id.editText)
         val saveButton = view.findViewById<Button>(R.id.saveButton)
         val attachmentButton = view.findViewById<FloatingActionButton>(R.id.attachmentIssues)
+
+        val imageRecyclerView = view.findViewById<RecyclerView>(R.id.imageRecyclerView)
+        imageAdapter = ImageAdapter(imagePaths)
+        imageRecyclerView.adapter = imageAdapter
+        imageRecyclerView.layoutManager = LinearLayoutManager(context)
 
         val noteTimestamp = arguments?.getLong("timestamp") ?: System.currentTimeMillis()
         val noteId = arguments?.getString("NOTE_ID")
