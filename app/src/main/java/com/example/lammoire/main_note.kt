@@ -149,7 +149,7 @@ class main_note : Fragment(R.layout.fragment_main_note) {
     }
 
     private fun showAttachmentOptions() {
-        val options = arrayOf("pilih dari folder", "pilih dari galeri", "kamera")
+        val options = arrayOf("Pilih dari folder", "Pilih dari galeri", "Kamera")
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("pilih opsi")
         builder.setItems(options) { dialog, which ->
@@ -196,11 +196,11 @@ class main_note : Fragment(R.layout.fragment_main_note) {
                         onLocationReceived(address)
                     }
                 } else {
-                    onLocationReceived("lokasi tidak tercakup dalam jangkauan")
+                    onLocationReceived("Lokasi tidak tercakup dalam jangkauan")
                 }
             }
             .addOnFailureListener {
-                onLocationReceived("gagal mendapatkan lokasi")
+                onLocationReceived("Gagal mendapatkan lokasi")
             }
     }
 }
