@@ -1,8 +1,10 @@
 package com.example.lammoire
 
+import ImageAdapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -65,12 +67,29 @@ class main_note : Fragment(R.layout.fragment_main_note) {
                         if (imagePath != null) {
                             imagePaths.add(imagePath)
                             imageAdapter.notifyDataSetChanged()
+                            saveImagePaths()
                             Toast.makeText(context, "File selected: $uri", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
                 }
             }
+    }
+
+    private fun showDeleteDialog(position: Int) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Image")
+            .setMessage("Are you sure you want to delete this image?")
+            .setPositiveButton("Yes") { dialog, _ ->
+                imagePaths.removeAt(position)
+                imageAdapter.notifyItemRemoved(position)
+                saveImagePaths()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun saveImageToLocal(uri: Uri): String? {
@@ -82,6 +101,23 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         outputStream.close()
         return file.absolutePath
     }
+
+    private fun saveImagePaths() {
+        val sharedPreferences = requireContext().getSharedPreferences("image_prefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putStringSet("image_paths", imagePaths.toSet())
+        editor.apply()
+    }
+
+    private fun loadImagePaths() {
+        val sharedPreferences = requireContext().getSharedPreferences("image_prefs", Context.MODE_PRIVATE)
+        val savedPaths = sharedPreferences.getStringSet("image_paths", emptySet())
+        imagePaths.clear()
+        imagePaths.addAll(savedPaths ?: emptySet())
+        imageAdapter.notifyDataSetChanged()
+    }
+
+
 
     private fun changeStatusBarColor(color: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -102,9 +138,13 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         val attachmentButton = view.findViewById<FloatingActionButton>(R.id.attachmentIssues)
 
         val imageRecyclerView = view.findViewById<RecyclerView>(R.id.imageRecyclerView)
-        imageAdapter = ImageAdapter(imagePaths)
+        imageAdapter = ImageAdapter(imagePaths) { position ->
+            showDeleteDialog(position)
+        }
         imageRecyclerView.adapter = imageAdapter
         imageRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        loadImagePaths()
 
         val noteTimestamp = arguments?.getLong("timestamp") ?: System.currentTimeMillis()
         val noteId = arguments?.getString("NOTE_ID")
