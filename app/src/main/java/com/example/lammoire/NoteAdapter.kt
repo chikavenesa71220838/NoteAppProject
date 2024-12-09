@@ -124,7 +124,7 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
 
         AlertDialog.Builder(context)
             .setTitle("Detail Catatan")
-            .setMessage("Tanggal Pembuatan: $creationDateText\nLokasi: ${note.location}")
+            .setMessage("Tanggal Pembuatan: $creationDateText\n\nLokasi: ${note.location}")
             .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
             .show()
     }
@@ -141,7 +141,7 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
                         showNoteDetails(context, note)
                     }
                 } else {
-                    Toast.makeText(context, "Note not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "catatan tidak ada", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { exception ->
