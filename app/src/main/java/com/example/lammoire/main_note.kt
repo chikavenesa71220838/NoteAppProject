@@ -22,22 +22,31 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 
 class main_note : Fragment(R.layout.fragment_main_note) {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var pickFileLauncher: ActivityResultLauncher<Intent>
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         changeStatusBarColor("#B68730")
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         pickFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -93,43 +102,45 @@ class main_note : Fragment(R.layout.fragment_main_note) {
             val userId = auth.currentUser?.uid
 
             if (text.isNotEmpty() && userId != null) {
-                val noteRef = firestore.collection("users").document(userId).collection("notes")
+                getCurrentLocation { location ->
+                    val noteRef = firestore.collection("users").document(userId).collection("notes")
 
-                if (!noteId.isNullOrEmpty()) {
-                    noteRef.document(noteId).get().addOnSuccessListener { document ->
-                        if (document != null) {
-                            val updatedNote = mapOf(
-                                "text" to text,
-                                "timestamp" to System.currentTimeMillis()
-                            )
-                            noteRef.document(noteId).set(updatedNote)
-                                .addOnSuccessListener {
-                                    Toast.makeText(context, "Catatan diperbarui", Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(context, "Gagal memperbarui catatan", Toast.LENGTH_SHORT).show()
-                                }
-                        }
+                    if (!noteId.isNullOrEmpty()) {
+                        val updatedNote = mapOf(
+                            "text" to text,
+                            "timestamp" to System.currentTimeMillis()
+                        )
+                        noteRef.document(noteId).update(updatedNote)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Catatan diperbarui", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "Gagal memperbarui catatan", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        val newNote = mapOf(
+                            "text" to text,
+                            "timestamp" to System.currentTimeMillis(),
+                            "creationDate" to System.currentTimeMillis(),
+                            "location" to location
+                        )
+                        noteRef.add(newNote)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Catatan disimpan", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "Gagal menyimpan catatan", Toast.LENGTH_SHORT).show()
+                            }
                     }
-                } else {
-                    val newNote = mapOf(
-                        "text" to text,
-                        "timestamp" to System.currentTimeMillis()
-                    )
-                    noteRef.add(newNote)
-                        .addOnSuccessListener {
-                            Toast.makeText(context, "Catatan disimpan", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(context, "Gagal menyimpan catatan", Toast.LENGTH_SHORT).show()
-                        }
-                }
 
-                findNavController().navigate(R.id.action_main_note_to_mainMenu)
+                    findNavController().navigate(R.id.action_main_note_to_mainMenu)
+                }
             } else {
                 Toast.makeText(context, "Tidak bisa membuat catatan kosong", Toast.LENGTH_SHORT).show()
             }
         }
+
+
         attachmentButton.setOnClickListener {
             showAttachmentOptions()
         }
@@ -159,5 +170,33 @@ class main_note : Fragment(R.layout.fragment_main_note) {
             }
         }
         builder.show()
+    }
+
+    private fun getCurrentLocation(onLocationReceived: (String) -> Unit) {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                1001)
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    val latitude = location.latitude
+                    val longitude = location.longitude
+                    onLocationReceived("Lat: $latitude, Lon: $longitude")
+                } else {
+                    onLocationReceived("Lokasi tidak tersedia")
+                }
+            }
+            .addOnFailureListener {
+                onLocationReceived("Gagal mendapatkan lokasi")
+            }
     }
 }

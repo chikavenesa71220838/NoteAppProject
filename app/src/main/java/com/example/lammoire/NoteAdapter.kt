@@ -1,6 +1,7 @@
 package com.example.lammoire
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -49,11 +50,20 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
                         deleteNoteFromFirebase(holder.itemView.context, note.id, position)
                         true
                     }
+                    R.id.action_detail -> {
+                        val bundle = Bundle().apply {
+                            putLong("creationDate", note.creationDate)
+                            putString("location", note.location)
+                        }
+                        showNoteDetails(holder.itemView.context, bundle)
+                        true
+                    }
                     else -> false
                 }
             }
             popupMenu.show()
         }
+
         holder.itemView.setOnClickListener {
             val navController = androidx.navigation.Navigation.findNavController(holder.itemView)
             val bundle = Bundle().apply {
@@ -64,7 +74,6 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
             navController.navigate(R.id.action_mainMenu_to_main_note, bundle)
         }
     }
-
 
     override fun getItemCount(): Int {
         return notes.size
@@ -100,4 +109,20 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
                 }
         }
     }
+
+    private fun showNoteDetails(context: Context, arguments: Bundle?) {
+        val timestamp = arguments?.getLong("creationDate") ?: System.currentTimeMillis()
+        val location = arguments?.getString("location") ?: "Tidak diketahui"
+
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+        val creationDateText = dateFormat.format(Date(timestamp))
+
+        AlertDialog.Builder(context)
+            .setTitle("Detail Catatan")
+            .setMessage("Tanggal Pembuatan: $creationDateText\nLokasi: $location")
+            .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
+
 }
