@@ -51,11 +51,7 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
                         true
                     }
                     R.id.action_detail -> {
-                        val bundle = Bundle().apply {
-                            putLong("creationDate", note.creationDate)
-                            putString("location", note.location)
-                        }
-                        showNoteDetails(holder.itemView.context, bundle)
+                        fetchNoteDetails(holder.itemView.context, note.id)
                         true
                     }
                     else -> false
@@ -70,6 +66,8 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
                 putString("NOTE_ID", note.id)
                 putString("NOTE_TEXT", note.text)
                 putLong("timestamp", note.timestamp)
+                putLong("creationDate", note.creationDate)
+                putString("location", note.location)
             }
             navController.navigate(R.id.action_mainMenu_to_main_note, bundle)
         }
@@ -91,38 +89,64 @@ class NoteAdapter(private var notes: MutableList<Note>) : RecyclerView.Adapter<N
     }
 
     private fun deleteNoteFromFirebase(context: Context, noteId: String, position: Int) {
-        val db = FirebaseFirestore.getInstance()
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId != null) {
-            db.collection("users").document(userId).collection("notes").document(noteId)
-                .delete()
-                .addOnSuccessListener {
-                    val index = notes.indexOfFirst { it.id == noteId }
-                    if (index != -1) {
-                        notes.removeAt(index)
-                        notifyItemRemoved(index)
-                    }
-                    Toast.makeText(context, "Berhasil terhapus!", Toast.LENGTH_SHORT).show()
+        AlertDialog.Builder(context)
+            .setTitle("Konfirmasi Penghapusan")
+            .setMessage("Apakah Anda yakin ingin menghapus catatan ini?")
+            .setPositiveButton("Ya") { dialog, _ ->
+                val db = FirebaseFirestore.getInstance()
+                val userId = FirebaseAuth.getInstance().currentUser?.uid
+                if (userId != null) {
+                    db.collection("users").document(userId).collection("notes").document(noteId)
+                        .delete()
+                        .addOnSuccessListener {
+                            val index = notes.indexOfFirst { it.id == noteId }
+                            if (index != -1) {
+                                notes.removeAt(index)
+                                notifyItemRemoved(index)
+                            }
+                            Toast.makeText(context, "Catatan berhasil dihapus!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(context, "Gagal menghapus catatan!", Toast.LENGTH_SHORT).show()
+                        }
                 }
-                .addOnFailureListener {
-                    Toast.makeText(context, "Gagal dihapus!", Toast.LENGTH_SHORT).show()
-                }
-        }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
-    private fun showNoteDetails(context: Context, arguments: Bundle?) {
-        val timestamp = arguments?.getLong("creationDate") ?: System.currentTimeMillis()
-        val location = arguments?.getString("location") ?: "Tidak diketahui"
-
+    private fun showNoteDetails(context: Context, note: Note) {
         val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
-        val creationDateText = dateFormat.format(Date(timestamp))
+        val creationDateText = dateFormat.format(Date(note.creationDate))
 
         AlertDialog.Builder(context)
             .setTitle("Detail Catatan")
-            .setMessage("Tanggal Pembuatan: $creationDateText\nLokasi: $location")
+            .setMessage("Tanggal Pembuatan: $creationDateText\nLokasi: ${note.location}")
             .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
+    private fun fetchNoteDetails(context: Context, noteId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+        db.collection("users").document(userId).collection("notes").document(noteId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val note = document.toObject(Note::class.java)
+                    if (note != null) {
+                        showNoteDetails(context, note)
+                    }
+                } else {
+                    Toast.makeText(context, "Note not found", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(context, "Error fetching note details", Toast.LENGTH_SHORT).show()
+            }
+    }
 
 }

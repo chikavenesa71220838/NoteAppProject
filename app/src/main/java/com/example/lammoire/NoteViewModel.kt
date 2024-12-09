@@ -26,7 +26,7 @@ class NoteViewModel : ViewModel() {
                             id = document.id,
                             text = document.getString("text") ?: "",
                             timestamp = document.getLong("timestamp") ?: 0L,
-                            location = document.getString("location") ?: "",
+                            location = document.getString("location") ?: "Tidak diketahui",
                             creationDate = document.getLong("creationDate") ?: 0L
                         )
                     }
@@ -34,5 +34,6 @@ class NoteViewModel : ViewModel() {
                 }
             }
     }
+
 
 }

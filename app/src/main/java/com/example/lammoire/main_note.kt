@@ -31,6 +31,7 @@ import java.util.Locale
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import androidx.core.app.ActivityCompat
 
 class main_note : Fragment(R.layout.fragment_main_note) {
@@ -188,15 +189,18 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
-                    val latitude = location.latitude
-                    val longitude = location.longitude
-                    onLocationReceived("Lat: $latitude, Lon: $longitude")
+                    val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                    val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                    val address = addresses?.get(0)?.getAddressLine(0)
+                    if (address != null) {
+                        onLocationReceived(address)
+                    }
                 } else {
-                    onLocationReceived("Lokasi tidak tersedia")
+                    onLocationReceived("lokasi tidak tercakup dalam jangkauan")
                 }
             }
             .addOnFailureListener {
-                onLocationReceived("Gagal mendapatkan lokasi")
+                onLocationReceived("gagal mendapatkan lokasi")
             }
     }
 }
