@@ -68,7 +68,7 @@ class main_note : Fragment(R.layout.fragment_main_note) {
                     val data: Intent? = result.data
                     if (data != null && data.data != null) {
                         val imageUri = data.data
-                        val imagePath = imageUri?.let { getPathFromUri(it) }
+                        val imagePath = imageUri?.let { saveImageToLocal(it) }
                         if (imagePath != null) {
                             imagePaths.add(imagePath)
                             imageAdapter.notifyItemInserted(imagePaths.size - 1)
@@ -89,15 +89,15 @@ class main_note : Fragment(R.layout.fragment_main_note) {
 
     private fun showDeleteDialog(position: Int) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Delete Image")
-            .setMessage("Are you sure you want to delete this image?")
-            .setPositiveButton("Yes") { dialog, _ ->
+            .setTitle("Hapus Foto")
+            .setMessage("Apakah Anda yakin ingin menghapus foto ini?")
+            .setPositiveButton("Ya") { dialog, _ ->
                 imagePaths.removeAt(position)
                 imageAdapter.notifyItemRemoved(position)
                 saveImagePaths()
                 dialog.dismiss()
             }
-            .setNegativeButton("No") { dialog, _ ->
+            .setNegativeButton("Tidak") { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
@@ -127,8 +127,6 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         imagePaths.addAll(savedPaths ?: emptySet())
         imageAdapter.notifyDataSetChanged()
     }
-
-
 
     private fun changeStatusBarColor(color: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -253,6 +251,19 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         builder.show()
     }
 
+    private fun getPathFromUri(uri: Uri): String? {
+        var path: String? = null
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = requireContext().contentResolver.query(uri, projection, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                path = it.getString(columnIndex)
+            }
+        }
+        return path
+    }
+
     private fun getCurrentLocation(onLocationReceived: (String) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -282,19 +293,6 @@ class main_note : Fragment(R.layout.fragment_main_note) {
             .addOnFailureListener {
                 onLocationReceived("Gagal mendapatkan lokasi")
             }
-    }
-
-    private fun getPathFromUri(uri: Uri): String? {
-        var path: String? = null
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = requireContext().contentResolver.query(uri, projection, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                path = it.getString(columnIndex)
-            }
-        }
-        return path
     }
 
     private fun saveBitmapToFile(bitmap: Bitmap): String? {
