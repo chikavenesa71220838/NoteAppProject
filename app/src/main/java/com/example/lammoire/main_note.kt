@@ -1,8 +1,10 @@
 package com.example.lammoire
 
+import ImageAdapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -33,12 +35,18 @@ import com.google.android.gms.location.LocationServices
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import java.io.File
+import java.io.FileOutputStream
 
 class main_note : Fragment(R.layout.fragment_main_note) {
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var pickFileLauncher: ActivityResultLauncher<Intent>
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var imageAdapter: ImageAdapter
+    private val imagePaths = mutableListOf<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,15 +57,67 @@ class main_note : Fragment(R.layout.fragment_main_note) {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        pickFileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val uri: Uri? = result.data?.data
-                if (uri != null) {
-                    Toast.makeText(context, "File selected: $uri", Toast.LENGTH_SHORT).show()
+
+        pickFileLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val uri: Uri? = result.data?.data
+                    if (uri != null) {
+                        val imagePath = saveImageToLocal(uri)
+                        if (imagePath != null) {
+                            imagePaths.add(imagePath)
+                            imageAdapter.notifyDataSetChanged()
+                            saveImagePaths()
+                            Toast.makeText(context, "File selected: $uri", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
                 }
             }
-        }
     }
+
+    private fun showDeleteDialog(position: Int) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Image")
+            .setMessage("Are you sure you want to delete this image?")
+            .setPositiveButton("Yes") { dialog, _ ->
+                imagePaths.removeAt(position)
+                imageAdapter.notifyItemRemoved(position)
+                saveImagePaths()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun saveImageToLocal(uri: Uri): String? {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val file = File(requireContext().getExternalFilesDir(null), "selected_image_${System.currentTimeMillis()}.jpg")
+        val outputStream = FileOutputStream(file)
+        inputStream?.copyTo(outputStream)
+        inputStream?.close()
+        outputStream.close()
+        return file.absolutePath
+    }
+
+    private fun saveImagePaths() {
+        val sharedPreferences = requireContext().getSharedPreferences("image_prefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putStringSet("image_paths", imagePaths.toSet())
+        editor.apply()
+    }
+
+    private fun loadImagePaths() {
+        val sharedPreferences = requireContext().getSharedPreferences("image_prefs", Context.MODE_PRIVATE)
+        val savedPaths = sharedPreferences.getStringSet("image_paths", emptySet())
+        imagePaths.clear()
+        imagePaths.addAll(savedPaths ?: emptySet())
+        imageAdapter.notifyDataSetChanged()
+    }
+
+
 
     private fun changeStatusBarColor(color: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -76,6 +136,15 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         val editText = view.findViewById<EditText>(R.id.editText)
         val saveButton = view.findViewById<Button>(R.id.saveButton)
         val attachmentButton = view.findViewById<FloatingActionButton>(R.id.attachmentIssues)
+
+        val imageRecyclerView = view.findViewById<RecyclerView>(R.id.imageRecyclerView)
+        imageAdapter = ImageAdapter(imagePaths) { position ->
+            showDeleteDialog(position)
+        }
+        imageRecyclerView.adapter = imageAdapter
+        imageRecyclerView.layoutManager = LinearLayoutManager(context)
+
+        loadImagePaths()
 
         val noteTimestamp = arguments?.getLong("timestamp") ?: System.currentTimeMillis()
         val noteId = arguments?.getString("NOTE_ID")
@@ -149,7 +218,7 @@ class main_note : Fragment(R.layout.fragment_main_note) {
     }
 
     private fun showAttachmentOptions() {
-        val options = arrayOf("pilih dari folder", "pilih dari galeri", "kamera")
+        val options = arrayOf("Pilih dari folder", "Pilih dari galeri", "Kamera")
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("pilih opsi")
         builder.setItems(options) { dialog, which ->
@@ -196,11 +265,11 @@ class main_note : Fragment(R.layout.fragment_main_note) {
                         onLocationReceived(address)
                     }
                 } else {
-                    onLocationReceived("lokasi tidak tercakup dalam jangkauan")
+                    onLocationReceived("Lokasi tidak tercakup dalam jangkauan")
                 }
             }
             .addOnFailureListener {
-                onLocationReceived("gagal mendapatkan lokasi")
+                onLocationReceived("Gagal mendapatkan lokasi")
             }
     }
 }

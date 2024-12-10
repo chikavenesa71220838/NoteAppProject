@@ -7,6 +7,6 @@
 
     <item
         android:id="@+id/action_detail"
-        android:title="detail"
+        android:title="Detail"
         android:showAsAction="always" />
 </menu>
