@@ -33,12 +33,15 @@ import java.util.Locale
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.Geocoder
+import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 class main_note : Fragment(R.layout.fragment_main_note) {
     private lateinit var firestore: FirebaseFirestore
@@ -47,6 +50,7 @@ class main_note : Fragment(R.layout.fragment_main_note) {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var imageAdapter: ImageAdapter
     private val imagePaths = mutableListOf<String>()
+    private var noteId: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,15 +65,22 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         pickFileLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    val uri: Uri? = result.data?.data
-                    if (uri != null) {
-                        val imagePath = saveImageToLocal(uri)
+                    val data: Intent? = result.data
+                    if (data != null && data.data != null) {
+                        val imageUri = data.data
+                        val imagePath = imageUri?.let { getPathFromUri(it) }
                         if (imagePath != null) {
                             imagePaths.add(imagePath)
-                            imageAdapter.notifyDataSetChanged()
+                            imageAdapter.notifyItemInserted(imagePaths.size - 1)
                             saveImagePaths()
-                            Toast.makeText(context, "File selected: $uri", Toast.LENGTH_SHORT)
-                                .show()
+                        }
+                    } else if (data != null && data.extras != null) {
+                        val imageBitmap = data.extras!!.get("data") as Bitmap
+                        val imagePath = saveBitmapToFile(imageBitmap)
+                        if (imagePath != null) {
+                            imagePaths.add(imagePath)
+                            imageAdapter.notifyItemInserted(imagePaths.size - 1)
+                            saveImagePaths()
                         }
                     }
                 }
@@ -105,13 +116,13 @@ class main_note : Fragment(R.layout.fragment_main_note) {
     private fun saveImagePaths() {
         val sharedPreferences = requireContext().getSharedPreferences("image_prefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putStringSet("image_paths", imagePaths.toSet())
+        editor.putStringSet("image_paths_$noteId", imagePaths.toSet())
         editor.apply()
     }
 
     private fun loadImagePaths() {
         val sharedPreferences = requireContext().getSharedPreferences("image_prefs", Context.MODE_PRIVATE)
-        val savedPaths = sharedPreferences.getStringSet("image_paths", emptySet())
+        val savedPaths = sharedPreferences.getStringSet("image_paths_$noteId", emptySet())
         imagePaths.clear()
         imagePaths.addAll(savedPaths ?: emptySet())
         imageAdapter.notifyDataSetChanged()
@@ -138,14 +149,14 @@ class main_note : Fragment(R.layout.fragment_main_note) {
         val attachmentButton = view.findViewById<FloatingActionButton>(R.id.attachmentIssues)
 
         val imageRecyclerView = view.findViewById<RecyclerView>(R.id.imageRecyclerView)
-        imageAdapter = ImageAdapter(imagePaths) { position ->
+        noteId = arguments?.getString("NOTE_ID")
+        imageAdapter = ImageAdapter(imagePaths, noteId) { position ->
             showDeleteDialog(position)
         }
         imageRecyclerView.adapter = imageAdapter
         imageRecyclerView.layoutManager = LinearLayoutManager(context)
 
         loadImagePaths()
-
         val noteTimestamp = arguments?.getLong("timestamp") ?: System.currentTimeMillis()
         val noteId = arguments?.getString("NOTE_ID")
         val noteText = arguments?.getString("NOTE_TEXT")
@@ -271,5 +282,33 @@ class main_note : Fragment(R.layout.fragment_main_note) {
             .addOnFailureListener {
                 onLocationReceived("Gagal mendapatkan lokasi")
             }
+    }
+
+    private fun getPathFromUri(uri: Uri): String? {
+        var path: String? = null
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = requireContext().contentResolver.query(uri, projection, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                path = it.getString(columnIndex)
+            }
+        }
+        return path
+    }
+
+    private fun saveBitmapToFile(bitmap: Bitmap): String? {
+        val filesDir = requireContext().filesDir
+        val imageFile = File(filesDir, "captured_image_${System.currentTimeMillis()}.jpg")
+        try {
+            val fos = FileOutputStream(imageFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
+            return imageFile.absolutePath
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
     }
 }

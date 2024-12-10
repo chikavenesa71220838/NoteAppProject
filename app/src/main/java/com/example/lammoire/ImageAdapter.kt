@@ -6,7 +6,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lammoire.R
 
-class ImageAdapter(private val imagePaths: MutableList<String>, private val onDelete: (Int) -> Unit) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
+class ImageAdapter(private val imagePaths: MutableList<String>, private val noteId: String?, private val onDelete: (Int) -> Unit) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
