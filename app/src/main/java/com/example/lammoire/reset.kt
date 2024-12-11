@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -24,6 +25,12 @@ class reset : Fragment(R.layout.fragment_reset) {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_reset, container, false)
+
+        val toolLog = view.findViewById<Toolbar>(R.id.toolbarProf)
+        toolLog.setNavigationIcon(R.drawable.baseline_arrow_back_24)
+        toolLog.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
 
         val saveButton = view.findViewById<Button>(R.id.saveButton)
         saveButton.setOnClickListener {

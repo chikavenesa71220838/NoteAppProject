@@ -52,21 +52,6 @@ class profile : Fragment(R.layout.fragment_profile) {
             saveUserData()
         }
 
-        val sharedPreferences = requireActivity().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
-
-        val lgout = view.findViewById<Button>(R.id.logout)
-        lgout.setOnClickListener {
-            val edt = sharedPreferences.edit()
-            edt.clear()
-            edt.apply()
-            findNavController().navigate(R.id.action_profile_to_loginpage)
-        }
-
-        val reset = view.findViewById<Button>(R.id.resetPasswordButton)
-        reset.setOnClickListener {
-            findNavController().navigate(R.id.action_profile_to_reset)
-        }
-
         return view
     }
 

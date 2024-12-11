@@ -4,13 +4,18 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -18,6 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,6 +35,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
     private lateinit var textUname: TextView
     private val noteViewModel: NoteViewModel by viewModels()
     private lateinit var noteAdapter: NoteAdapter
+    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 
     var backButtonTime: Long = 0
 
@@ -42,10 +49,29 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         auth = Firebase.auth
         db = FirebaseFirestore.getInstance()
 
-        val toolLog = view.findViewById<Toolbar>(R.id.toolMain)
-        toolLog.setNavigationIcon(R.drawable.baseline_account_circle_24)
-        toolLog.setNavigationOnClickListener {
-            findNavController().navigate(R.id.action_mainMenu_to_profile)
+        val drawerLayout: DrawerLayout = view.findViewById(R.id.drawerLayout)
+        val toolbar: Toolbar = view.findViewById(R.id.toolMain)
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+
+        actionBarDrawerToggle = ActionBarDrawerToggle(
+            activity,
+            drawerLayout,
+            R.string.nav_open,
+            R.string.nav_close
+        )
+        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
+
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.title = ""
+
+        actionBarDrawerToggle.setToolbarNavigationClickListener {
+
+        }
+
+        toolbar.setNavigationIcon(R.drawable.baseline_account_circle_24)
+        toolbar.setNavigationOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
         }
 
         textUname = view.findViewById(R.id.text_uname)
@@ -64,7 +90,7 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        val floatButt = view.findViewById<FloatingActionButton>(R.id.floatButt)
+        val floatButt: FloatingActionButton = view.findViewById(R.id.floatButt)
         floatButt.setOnClickListener {
             findNavController().navigate(R.id.action_mainMenu_to_main_note)
         }
@@ -74,6 +100,25 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         noteAdapter = NoteAdapter(mutableListOf())
         recyclerView.adapter = noteAdapter
         recyclerView.layoutManager = GridLayoutManager(context, 2)
+
+        val navigationView: NavigationView = view.findViewById(R.id.navigation_view)
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.profile_nav_menu -> {
+                    findNavController().navigate(R.id.action_mainMenu_to_profile)
+                    true
+                }
+                R.id.settings_nav_menu -> {
+                    findNavController().navigate(R.id.action_mainMenu_to_reset)
+                    true
+                }
+                R.id.logout_nav_menu -> {
+                    (activity as MainActivity).logout()
+                    true
+                }
+                else -> false
+            }
+        }
 
         return view
     }
@@ -96,8 +141,13 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
 
         auth = Firebase.auth
 
-        val userId = auth.currentUser?.uid ?: ""
-        noteViewModel.fetchNotes(userId)
+        val userId = auth.currentUser?.uid
+        if (!userId.isNullOrEmpty()) {
+            noteViewModel.fetchNotes(userId)
+        } else {
+            // Handle the case where userId is null or empty
+            Toast.makeText(context, "User ID is invalid", Toast.LENGTH_SHORT).show()
+        }
 
         noteViewModel.notes.observe(viewLifecycleOwner, Observer { notes ->
             noteAdapter.updateData(notes.toMutableList())
@@ -108,6 +158,11 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
         super.onResume()
         val userId = auth.currentUser?.uid ?: ""
         noteViewModel.fetchNotes(userId)
+
+        val drawerLayout: DrawerLayout = view?.findViewById(R.id.drawerLayout) ?: return
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }
     }
 
     private fun changeStatusBarColor(color: String) {
@@ -115,6 +170,14 @@ class mainMenu : Fragment(R.layout.fragment_main_menu) {
             val window = requireActivity().window
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.statusBarColor = android.graphics.Color.parseColor(color)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            true
+        } else {
+            super.onOptionsItemSelected(item)
         }
     }
 }

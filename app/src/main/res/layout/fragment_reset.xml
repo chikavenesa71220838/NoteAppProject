@@ -106,24 +106,4 @@
         android:textColor="@android:color/white"
         android:padding="16dp" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFECAD"
-        tools:context=".profile">
-
-        <Button
-            android:id="@+id/resetPasswordButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:backgroundTint="@color/custon"
-            android:padding="16dp"
-            android:text="Reset Password"
-            android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
 </LinearLayout>
