@@ -68,6 +68,9 @@
             app:popExitAnim="@anim/exitanim"
             android:id="@+id/action_mainMenu_to_profile"
             app:destination="@id/profile" />
+        <action
+            android:id="@+id/action_mainMenu_to_reset"
+            app:destination="@id/reset" />
     </fragment>
     <fragment
         android:id="@+id/startafterlogin"
@@ -109,6 +112,9 @@
             app:popExitAnim="@anim/exitanim"
             android:id="@+id/action_profile_to_reset"
             app:destination="@id/reset" />
+        <action
+            android:id="@+id/action_profile_to_mainMenu"
+            app:destination="@id/mainMenu" />
     </fragment>
     <fragment
         android:id="@+id/reset"

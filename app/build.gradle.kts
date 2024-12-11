@@ -58,5 +58,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx:24.1.1")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.google.android.material:material:1.9.0")
+    implementation ("androidx.drawerlayout:drawerlayout:1.1.1")
 
 }
