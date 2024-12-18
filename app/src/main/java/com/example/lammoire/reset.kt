@@ -75,6 +75,7 @@ class reset : Fragment(R.layout.fragment_reset) {
                                     val edt = sharedPreferences.edit()
                                     edt.clear()
                                     edt.apply()
+                                    FirebaseAuth.getInstance().signOut()
                                     findNavController().navigate(R.id.action_reset_to_loginpage)
                                 } else {
                                     Toast.makeText(context, "password gagal diupdate", Toast.LENGTH_SHORT).show()
