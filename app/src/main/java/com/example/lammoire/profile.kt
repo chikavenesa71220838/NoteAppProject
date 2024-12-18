@@ -99,6 +99,12 @@ class profile : Fragment(R.layout.fragment_profile) {
                                         .addOnCompleteListener { verifyTask ->
                                             if (verifyTask.isSuccessful) {
                                                 Toast.makeText(context, "Data dan email berhasil diperbarui, tolong periksa email untuk verifikasi", Toast.LENGTH_SHORT).show()
+                                                val sharedPreferences = requireActivity().getSharedPreferences("user_session", android.content.Context.MODE_PRIVATE)
+                                                val edt = sharedPreferences.edit()
+                                                edt.clear()
+                                                edt.apply()
+                                                FirebaseAuth.getInstance().signOut()
+                                                findNavController().navigate(R.id.loginpage)
                                             } else {
                                                 Toast.makeText(context, "Gagal mengirim email verifikasi", Toast.LENGTH_SHORT).show()
                                             }
